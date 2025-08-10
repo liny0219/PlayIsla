@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, Animation, input, Input, EventKeyboard, KeyCode, Prefab, instantiate, director } from 'cc';
+import { _decorator, Component, Node, Vec3, Vec2, Animation, input, Input, EventKeyboard, KeyCode, Prefab, instantiate, director, RigidBody2D, Collider2D, Contact2DType, IPhysics2DContact } from 'cc';
 import { PlayerSkill } from './PlayerSkill';
 const { ccclass, property } = _decorator;
 
@@ -19,7 +19,7 @@ export class Player extends Component {
     
     // 移动速度
     @property
-    public moveSpeed: number = 200;
+    public moveSpeed: number = 10;
     
     @property(Animation)
     private animation: Animation = null;
@@ -46,6 +46,9 @@ export class Player extends Component {
     // PlayerSkill容器节点引用
     private playerSkillContainer: Node = null;
     
+    @property({ tooltip: '击退冲量强度（越大弹得越远）' })
+    public knockbackImpulse: number = 220;
+
     private isAttacking: boolean = false;
     private moveDirection: Vec3 = new Vec3(0, 0, 0);
     
@@ -55,6 +58,8 @@ export class Player extends Component {
     // 按键状态
     private keyStates: Map<KeyCode, boolean> = new Map();
     
+    private rb2d: RigidBody2D | null = null;
+
     start() {
         if (!this.animation) {
             console.error('Player: Animation component not found!');
@@ -69,6 +74,18 @@ export class Player extends Component {
         
         // 设置初始位置在移动范围内
         this.setInitialPosition();
+
+        // 物理组件初始化（方案B：全物理）
+        this.rb2d = this.getComponent(RigidBody2D);
+        const col = this.getComponent(Collider2D);
+        if (this.rb2d) {
+            this.rb2d.gravityScale = 0;
+            this.rb2d.fixedRotation = true;
+            this.rb2d.linearDamping = 5;
+        }
+        if (col) {
+            col.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        }
     }
     
     /**
@@ -264,24 +281,67 @@ export class Player extends Component {
     }
     
     update(deltaTime: number) {
-        // 可选：攻击时锁定移动
+        // 攻击时是否锁定移动
         if (this.lockMovementDuringAttack && this.isAttacking) {
+            if (this.rb2d) {
+                this.rb2d.linearVelocity = new Vec2(0, 0);
+            }
             return;
         }
-        
-        // 如果有移动输入
-        if (this.moveDirection.length() > 0) {
-            // 计算新位置
+
+        const hasInput = this.moveDirection.length() > 0;
+
+        // 物理速度驱动（若无刚体则兜底使用旧逻辑）
+        if (this.rb2d) {
+            if (hasInput) {
+                this.rb2d.linearVelocity = new Vec2(
+                    this.moveDirection.x * this.moveSpeed,
+                    this.moveDirection.y * this.moveSpeed
+                );
+            } else {
+                this.rb2d.linearVelocity = new Vec2(0, 0);
+            }
+        } else if (hasInput) {
             const currentPos = this.node.position;
             const moveDistance = this.moveSpeed * deltaTime;
             const newPos = currentPos.clone().add(
                 this.moveDirection.clone().multiplyScalar(moveDistance)
             );
-            
-            // 限制在移动范围内
             const clampedPos = this.clampPositionToRange(newPos);
             this.node.setPosition(clampedPos);
         }
+    }
+
+    private onBeginContact(self: Collider2D, other: Collider2D, contact: IPhysics2DContact | null) {
+        // 简单通过名称判断（可改为分组判断）
+        if (!other?.node?.name?.includes('Enemy')) return;
+
+        const playerBody = this.rb2d;
+        const enemyBody = other.node.getComponent(RigidBody2D);
+        if (!playerBody || !enemyBody) return;
+
+        // 计算碰撞法线（Box2D 法线朝向 self）
+        let nx = 0, ny = 0;
+        const anyContact: any = contact as any;
+        if (anyContact && anyContact.getWorldManifold) {
+            const wm = anyContact.getWorldManifold();
+            nx = wm.normal.x; ny = wm.normal.y;
+        }
+        if (nx === 0 && ny === 0) {
+            const p = this.node.worldPosition;
+            const e = other.node.worldPosition;
+            nx = p.x - e.x; ny = p.y - e.y;
+            const len = Math.hypot(nx, ny) || 1;
+            nx /= len; ny /= len;
+        }
+
+        const I = this.knockbackImpulse;
+        const pPos = this.node.worldPosition;
+        const ePos = other.node.worldPosition;
+
+        // 对双方施加等大反向冲量
+        playerBody.applyLinearImpulse(new Vec2(nx * I, ny * I), new Vec2(pPos.x, pPos.y), true);
+        enemyBody.applyLinearImpulse(new Vec2(-nx * I, -ny * I), new Vec2(ePos.x, ePos.y), true);
     }
     
     /**
@@ -293,6 +353,10 @@ export class Player extends Component {
         this.unschedule(this.boundFireOnce);
         if (this.animation) {
             this.animation.off(Animation.EventType.FINISHED, this.onAttackAnimationFinished, this);
+        }
+        const col = this.getComponent(Collider2D);
+        if (col) {
+            col.off(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
         }
     }
 } 

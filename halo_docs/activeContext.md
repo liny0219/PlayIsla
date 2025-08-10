@@ -26,6 +26,8 @@
 - ✅ **修复：敌人移动一次后停止的问题（Enemy攻击动画命名错误导致isAttacking未重置）**
 - ✅ **新增：玩家攻击间隔可配置（attackInterval），支持按住空格自动连发（autoFire），并提供是否攻击锁定移动的开关（lockMovementDuringAttack）**
  - ✅ **清理：移除 Player 与 PlayerSkill 的调试日志输出**
+ - ✅ **改造：方案B 全物理驱动** — Player 与 Enemy 改为 `RigidBody2D` Dynamic 刚体，使用线速度移动；在 `BEGIN_CONTACT` 时对双方施加等大反向冲量（`knockbackImpulse`）以实现碰撞击退；建议用静态墙替代位置 clamp。
+ - ✅ **优化：调整玩家移动速度从200降低到100，提供更好的游戏手感**
 
 ## 下一步计划
 1. ✅ 创建Enemy.ts脚本
@@ -34,6 +36,6 @@
 4. ✅ 创建Player.ts控制脚本
 5. ✅ 实现玩家技能发射系统
 6. ✅ 修复技能坐标问题
-7. ⏳ 在游戏场景中测试玩家和敌人行为
-8. ⏳ 整合游戏逻辑
-9. ⏳ 添加玩家与敌人的交互系统 
+7. ⏳ 在场景中为 Player/Enemy 配置 `RigidBody2D` + `BoxCollider2D`，并添加边界静态墙
+8. ⏳ 调整 `knockbackImpulse`、`linearDamping` 以优化体验
+9. ⏳ 技能与敌人碰撞（独立配置与数值）

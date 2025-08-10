@@ -353,8 +353,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": -274.259,
-      "y": 2.465,
+      "x": -348.849,
+      "y": 5.28,
       "z": 0
     },
     "_lrot": {
@@ -511,6 +511,10 @@
       {
         "__uuid__": "d0075490-b5f5-439c-a7a8-1ae2c871dfaa",
         "__expectedType__": "cc.AnimationClip"
+      },
+      {
+        "__uuid__": "9fdb5834-ad75-4f56-b844-7a5d9d592ecd",
+        "__expectedType__": "cc.AnimationClip"
       }
     ],
     "_defaultClip": {
@@ -618,14 +622,17 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "moveRangeX": -350,
+    "moveRangeX": -340,
     "moveRangeY": -170,
-    "moveRangeWidth": 350,
+    "moveRangeWidth": 680,
     "moveRangeHeight": 340,
     "moveSpeed": 200,
     "animation": {
       "__id__": 12
     },
+    "attackInterval": 0.25,
+    "autoFire": true,
+    "lockMovementDuringAttack": false,
     "skill1Prefab": {
       "__uuid__": "d28bfb0d-bb61-4374-9547-c5c428086089",
       "__expectedType__": "cc.Prefab"
@@ -731,7 +738,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 298.911,
-      "y": -1.233,
+      "y": 3.517,
       "z": 0
     },
     "_lrot": {
@@ -888,9 +895,16 @@
       {
         "__uuid__": "2ed5a83a-3a9e-4bf6-b765-1b41a0a0eb2f",
         "__expectedType__": "cc.AnimationClip"
+      },
+      {
+        "__uuid__": "c3cafeb7-fcc6-4a8b-8f08-f9686a06d0ed",
+        "__expectedType__": "cc.AnimationClip"
       }
     ],
-    "_defaultClip": null,
+    "_defaultClip": {
+      "__uuid__": "c3cafeb7-fcc6-4a8b-8f08-f9686a06d0ed",
+      "__expectedType__": "cc.AnimationClip"
+    },
     "_id": "f2U7P0TWVDJr2UgD19gY3b"
   },
   {
@@ -906,7 +920,7 @@
     "_contentSize": {
       "__type__": "cc.Size",
       "width": 40,
-      "height": 40
+      "height": 70
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -925,9 +939,9 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "moveRangeX": 0,
+    "moveRangeX": -340,
     "moveRangeY": -170,
-    "moveRangeWidth": 350,
+    "moveRangeWidth": 680,
     "moveRangeHeight": 340,
     "moveSpeed": 300,
     "attackInterval": 2,

@@ -23,12 +23,7 @@ export class PlayerSkill extends Component {
     // 重置生命周期计时器
     this.currentLifeTime = 0;
 
-    console.log(
-      `PlayerSkill: 技能初始化完成，位置: (${this.node.position.x}, ${this.node.position.y})`
-    );
-    console.log(
-      `PlayerSkill: 屏幕边界 - 宽度: ${this.screenBounds.width}, 高度: ${this.screenBounds.height}`
-    );
+    // 日志移除
   }
 
   update(deltaTime: number) {
@@ -100,9 +95,6 @@ export class PlayerSkill extends Component {
    * 销毁技能节点
    */
   private destroySkill(): void {
-    console.log(
-      `PlayerSkill: 技能销毁，最终位置: (${this.node.position.x}, ${this.node.position.y})`
-    );
     this.node.destroy();
   }
 
@@ -111,7 +103,7 @@ export class PlayerSkill extends Component {
    */
   public setStartPosition(position: Vec3): void {
     this.node.setPosition(position);
-    console.log(`PlayerSkill: 设置起始位置: (${position.x}, ${position.y})`);
+    // 日志移除
   }
 
   /**
@@ -119,7 +111,7 @@ export class PlayerSkill extends Component {
    */
   public setFlySpeed(speed: number): void {
     this.flySpeed = speed;
-    console.log(`PlayerSkill: 设置飞行速度: ${speed}`);
+    // 日志移除
   }
 
   /**
@@ -127,7 +119,7 @@ export class PlayerSkill extends Component {
    */
   public setLifeTime(time: number): void {
     this.lifeTime = time;
-    console.log(`PlayerSkill: 设置生命周期: ${time}秒`);
+    // 日志移除
   }
 
   /**

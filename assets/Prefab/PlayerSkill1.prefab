@@ -241,7 +241,7 @@
       "__id__": 11
     },
     "flySpeed": 800,
-    "lifeTime": 3,
+    "lifeTime": 2,
     "_id": ""
   },
   {
@@ -257,6 +257,7 @@
       "__id__": 0
     },
     "fileId": "7bcypuj55CO6iNpYy0ykCE",
+    "instance": null,
     "targetOverrides": null
   }
 ]

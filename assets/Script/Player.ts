@@ -24,6 +24,16 @@ export class Player extends Component {
     @property(Animation)
     private animation: Animation = null;
     
+    // 攻击参数
+    @property
+    public attackInterval: number = 0.25; // 秒
+    
+    @property
+    public autoFire: boolean = true; // 按住空格自动连发
+    
+    @property
+    public lockMovementDuringAttack: boolean = false; // 攻击时是否锁定移动
+    
     // 技能预制体引用
     @property(Prefab)
     private skill1Prefab: Prefab = null;
@@ -38,6 +48,9 @@ export class Player extends Component {
     
     private isAttacking: boolean = false;
     private moveDirection: Vec3 = new Vec3(0, 0, 0);
+    
+    private isFiring: boolean = false;
+    private boundFireOnce: () => void = () => this.fireOnce();
     
     // 按键状态
     private keyStates: Map<KeyCode, boolean> = new Map();
@@ -83,7 +96,11 @@ export class Player extends Component {
         
         // 空格键攻击
         if (event.keyCode === KeyCode.SPACE) {
-            this.playAttackAnimation();
+            if (this.autoFire) {
+                this.startFiring();
+            } else {
+                this.fireOnce();
+            }
         }
         
         this.updateMoveDirection();
@@ -94,6 +111,11 @@ export class Player extends Component {
      */
     private onKeyUp(event: EventKeyboard) {
         this.keyStates.set(event.keyCode, false);
+        
+        if (event.keyCode === KeyCode.SPACE) {
+            this.stopFiring();
+        }
+        
         this.updateMoveDirection();
     }
     
@@ -133,22 +155,60 @@ export class Player extends Component {
     }
     
     /**
+     * 执行一次攻击（用于连发的单次触发）
+     */
+    private fireOnce() {
+        // 确保动画处于攻击态（若未在攻击中则启动一次动画）
+        if (!this.isAttacking) {
+            this.playAttackAnimation();
+        } else {
+            // 动画在播放中，按间隔继续发射技能
+            this.fireSkill();
+        }
+    }
+    
+    /**
      * 播放攻击动画
      */
     private playAttackAnimation() {
-        if (this.animation && !this.isAttacking) {
-            this.isAttacking = true;
-            this.animation.play('Player_Attack');
-            
-            // 发射技能
-            this.fireSkill();
-            
-            // 攻击动画播放完成后返回闲置状态
-            this.animation.once(Animation.EventType.FINISHED, () => {
-                this.isAttacking = false;
-                this.playIdleAnimation();
-            });
+        if (!this.animation) {
+            return;
         }
+        if (this.isAttacking) {
+            return;
+        }
+        this.isAttacking = true;
+        this.animation.play('Player_Attack');
+        // 首次播放时立即发射一发
+        this.fireSkill();
+        // 攻击动画播放完成后返回闲置状态
+        this.animation.once(Animation.EventType.FINISHED, this.onAttackAnimationFinished, this);
+    }
+
+    private onAttackAnimationFinished() {
+        this.isAttacking = false;
+        this.playIdleAnimation();
+    }
+    
+    /**
+     * 开始连发
+     */
+    private startFiring() {
+        if (this.isFiring) return;
+        this.isFiring = true;
+        // 立即来一发
+        this.fireOnce();
+        // 后续按间隔连发（使用绑定回调，便于停止时反注册）
+        this.schedule(this.boundFireOnce, this.attackInterval);
+    }
+    
+    /**
+     * 停止连发
+     */
+    private stopFiring() {
+        if (!this.isFiring) return;
+        this.isFiring = false;
+        this.unschedule(this.boundFireOnce);
     }
     
     /**
@@ -188,9 +248,7 @@ export class Player extends Component {
         
         // 获取技能脚本组件并初始化
         const skillComponent = skillNode.getComponent(PlayerSkill);
-        if (skillComponent) {
-            console.log(`Player: Skill fired from world position (${shootWorldPos.x}, ${shootWorldPos.y}), local position (${localPos.x}, ${localPos.y})`);
-        } else {
+        if (!skillComponent) {
             console.error('Player: PlayerSkill component not found on skill prefab!');
         }
     }
@@ -206,8 +264,8 @@ export class Player extends Component {
     }
     
     update(deltaTime: number) {
-        // 如果在攻击中，不允许移动
-        if (this.isAttacking) {
+        // 可选：攻击时锁定移动
+        if (this.lockMovementDuringAttack && this.isAttacking) {
             return;
         }
         
@@ -232,5 +290,9 @@ export class Player extends Component {
     onDestroy() {
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+        this.unschedule(this.boundFireOnce);
+        if (this.animation) {
+            this.animation.off(Animation.EventType.FINISHED, this.onAttackAnimationFinished, this);
+        }
     }
 } 

@@ -23,6 +23,9 @@
 - ✅ **新增：技能自动播放Player_Skill1动画**
 - ✅ **修复：修正了技能发射时的坐标转换问题**
 - ✅ **优化：改为通过编辑器属性直接分配Shoot节点和PlayerSkill容器**
+- ✅ **修复：敌人移动一次后停止的问题（Enemy攻击动画命名错误导致isAttacking未重置）**
+- ✅ **新增：玩家攻击间隔可配置（attackInterval），支持按住空格自动连发（autoFire），并提供是否攻击锁定移动的开关（lockMovementDuringAttack）**
+ - ✅ **清理：移除 Player 与 PlayerSkill 的调试日志输出**
 
 ## 下一步计划
 1. ✅ 创建Enemy.ts脚本

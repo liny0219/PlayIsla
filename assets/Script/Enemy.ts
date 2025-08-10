@@ -64,7 +64,7 @@ export class Enemy extends Component {
     private playAttackAnimation() {
         if (this.animation && !this.isAttacking) {
             this.isAttacking = true;
-            this.animation.play('EnemyAttack');
+            this.animation.play('Enemy_Attack');
             
             // 攻击动画播放完成后返回闲置状态
             this.animation.once(Animation.EventType.FINISHED, () => {

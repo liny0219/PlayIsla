@@ -19,6 +19,7 @@
   - ✅ 生命周期管理
   - ✅ 屏幕边界检测
   - ✅ **自动播放Player_Skill1动画**
+  - ✅ 清理调试日志
 
 ### 资源系统
 - ✅ 角色动画资源（Player_Idle, Player_Attack, Enemy_Idle, Enemy_Attack）

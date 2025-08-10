@@ -2,12 +2,12 @@
   "ver": "2.0.3",
   "importer": "animation-clip",
   "imported": true,
-  "uuid": "2ed5a83a-3a9e-4bf6-b765-1b41a0a0eb2f",
+  "uuid": "37e6444d-1715-4a25-b327-da37afd20bc1",
   "files": [
     ".cconb"
   ],
   "subMetas": {},
   "userData": {
-    "name": "EnemyAttack"
+    "name": "Player_Skill1"
   }
 }

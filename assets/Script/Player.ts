@@ -1,4 +1,5 @@
-import { _decorator, Component, Node, Vec3, Animation, input, Input, EventKeyboard, KeyCode } from 'cc';
+import { _decorator, Component, Node, Vec3, Animation, input, Input, EventKeyboard, KeyCode, Prefab, instantiate, director } from 'cc';
+import { PlayerSkill } from './PlayerSkill';
 const { ccclass, property } = _decorator;
 
 @ccclass('Player')
@@ -22,6 +23,18 @@ export class Player extends Component {
     
     @property(Animation)
     private animation: Animation = null;
+    
+    // 技能预制体引用
+    @property(Prefab)
+    private skill1Prefab: Prefab = null;
+
+    @property(Node)
+    // Shoot节点引用（技能发射起点）
+    private shootNode: Node = null;
+    
+    @property(Node)
+    // PlayerSkill容器节点引用
+    private playerSkillContainer: Node = null;
     
     private isAttacking: boolean = false;
     private moveDirection: Vec3 = new Vec3(0, 0, 0);
@@ -127,6 +140,9 @@ export class Player extends Component {
             this.isAttacking = true;
             this.animation.play('Player_Attack');
             
+            // 发射技能
+            this.fireSkill();
+            
             // 攻击动画播放完成后返回闲置状态
             this.animation.once(Animation.EventType.FINISHED, () => {
                 this.isAttacking = false;
@@ -136,13 +152,47 @@ export class Player extends Component {
     }
     
     /**
-     * 检查位置是否在移动范围内
+     * 发射技能
      */
-    private isPositionInRange(pos: Vec3): boolean {
-        return pos.x >= this.moveRangeX && 
-               pos.x <= this.moveRangeX + this.moveRangeWidth &&
-               pos.y >= this.moveRangeY && 
-               pos.y <= this.moveRangeY + this.moveRangeHeight;
+    private fireSkill() {
+        if (!this.skill1Prefab) {
+            console.error('Player: Skill prefab not assigned!');
+            return;
+        }
+        
+        if (!this.shootNode) {
+            console.error('Player: Shoot node not found!');
+            return;
+        }
+        
+        if (!this.playerSkillContainer) {
+            console.error('Player: PlayerSkill container not found!');
+            return;
+        }
+        
+        // 计算Shoot节点的世界位置
+        const shootWorldPos = this.shootNode.worldPosition;
+        
+        // 实例化技能预制体
+        const skillNode = instantiate(this.skill1Prefab);
+        
+        // 将技能节点添加到PlayerSkill容器中
+        this.playerSkillContainer.addChild(skillNode);
+        
+        // 将世界坐标转换为PlayerSkill容器的本地坐标
+        const localPos = new Vec3();
+        this.playerSkillContainer.inverseTransformPoint(localPos, shootWorldPos);
+        
+        // 设置技能的本地位置
+        skillNode.setPosition(localPos);
+        
+        // 获取技能脚本组件并初始化
+        const skillComponent = skillNode.getComponent(PlayerSkill);
+        if (skillComponent) {
+            console.log(`Player: Skill fired from world position (${shootWorldPos.x}, ${shootWorldPos.y}), local position (${localPos.x}, ${localPos.y})`);
+        } else {
+            console.error('Player: PlayerSkill component not found on skill prefab!');
+        }
     }
     
     /**

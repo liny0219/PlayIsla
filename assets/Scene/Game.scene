@@ -187,7 +187,7 @@
     "_priority": 0,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 207,
+    "_orthoHeight": 263.1652989449003,
     "_near": 0,
     "_far": 2000,
     "_color": {
@@ -810,7 +810,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 298.911,
-      "y": 3.517,
+      "y": -22.828,
       "z": 0
     },
     "_lrot": {
@@ -1011,13 +1011,10 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "moveRangeX": -340,
-    "moveRangeY": -170,
-    "moveRangeWidth": 680,
-    "moveRangeHeight": 340,
-    "moveSpeed": 20,
-    "attackInterval": 2,
-    "moveInterval": 1,
+    "linearDamping": 0.3,
+    "angularDamping": 0.2,
+    "bounceStrength": 0.8,
+    "minVelocityThreshold": 5,
     "animation": {
       "__id__": 25
     },
@@ -1052,7 +1049,7 @@
     "_id": "b2YG00rc5J6Zc8CEANLhNe"
   },
   {
-    "__type__": "cc.BoxCollider2D",
+    "__type__": "cc.CircleCollider2D",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
@@ -1072,12 +1069,8 @@
       "x": 0,
       "y": 0
     },
-    "_size": {
-      "__type__": "cc.Size",
-      "width": 40,
-      "height": 70
-    },
-    "_id": "85IWdCacFE36EgAqO1JJNu"
+    "_radius": 25.3,
+    "_id": "f2LLgJR5tJIIO6Zlwvtp/I"
   },
   {
     "__type__": "cc.Node",
@@ -1253,7 +1246,7 @@
     "_density": 1,
     "_sensor": false,
     "_friction": 0.2,
-    "_restitution": 0,
+    "_restitution": 0.2,
     "_offset": {
       "__type__": "cc.Vec2",
       "x": 0,
@@ -1262,7 +1255,7 @@
     "_size": {
       "__type__": "cc.Size",
       "width": 736,
-      "height": 30
+      "height": 100
     },
     "_id": "15ztovw+5NmpBP5bC3sUlU"
   },
@@ -1382,7 +1375,7 @@
     "_density": 1,
     "_sensor": false,
     "_friction": 0.2,
-    "_restitution": 0,
+    "_restitution": 0.2,
     "_offset": {
       "__type__": "cc.Vec2",
       "x": 0,
@@ -1391,7 +1384,7 @@
     "_size": {
       "__type__": "cc.Size",
       "width": 736,
-      "height": 30
+      "height": 100
     },
     "_id": "c0G4n2HDhMor3XITmOGdLg"
   },
@@ -1511,15 +1504,15 @@
     "_density": 1,
     "_sensor": false,
     "_friction": 0.2,
-    "_restitution": 0,
+    "_restitution": 0.2,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 0,
+      "x": -50,
       "y": 0
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 30,
+      "width": 100,
       "height": 414
     },
     "_id": "13C8O7nH5FjY6X8fiReKOo"
@@ -1640,15 +1633,15 @@
     "_density": 1,
     "_sensor": false,
     "_friction": 0.2,
-    "_restitution": 0,
+    "_restitution": 0.2,
     "_offset": {
       "__type__": "cc.Vec2",
-      "x": 0,
+      "x": 50,
       "y": 0
     },
     "_size": {
       "__type__": "cc.Size",
-      "width": 30,
+      "width": 100,
       "height": 414
     },
     "_id": "c1koxa3k9LWoLuQkOWmlkh"

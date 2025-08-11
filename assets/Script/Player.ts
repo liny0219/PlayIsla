@@ -314,7 +314,9 @@ export class Player extends Component {
 
     private onBeginContact(self: Collider2D, other: Collider2D, contact: IPhysics2DContact | null) {
         // 简单通过名称判断（可改为分组判断）
-        if (!other?.node?.name?.includes('Enemy')) return;
+        if (!other?.node?.name?.includes('Enemy')) {
+            return;
+        }
 
         const playerBody = this.rb2d;
         const enemyBody = other.node.getComponent(RigidBody2D);
@@ -335,13 +337,19 @@ export class Player extends Component {
             nx /= len; ny /= len;
         }
 
-        const I = this.knockbackImpulse;
-        const pPos = this.node.worldPosition;
-        const ePos = other.node.worldPosition;
+        // 延迟执行击退逻辑，避免在碰撞回调中直接操作刚体
+        this.scheduleOnce(() => {
+            if (!playerBody || !playerBody.node || !playerBody.node.isValid) return;
+            if (!enemyBody || !enemyBody.node || !enemyBody.node.isValid) return;
 
-        // 对双方施加等大反向冲量
-        playerBody.applyLinearImpulse(new Vec2(nx * I, ny * I), new Vec2(pPos.x, pPos.y), true);
-        enemyBody.applyLinearImpulse(new Vec2(-nx * I, -ny * I), new Vec2(ePos.x, ePos.y), true);
+            const I = this.knockbackImpulse;
+            const pPos = playerBody.node.worldPosition;
+            const ePos = enemyBody.node.worldPosition;
+
+            // 对双方施加等大反向冲量
+            playerBody.applyLinearImpulse(new Vec2(nx * I, ny * I), new Vec2(pPos.x, pPos.y), true);
+            enemyBody.applyLinearImpulse(new Vec2(-nx * I, -ny * I), new Vec2(ePos.x, ePos.y), true);
+        }, 0);
     }
     
     /**
